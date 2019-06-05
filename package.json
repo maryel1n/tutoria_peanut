@@ -1,0 +1,21 @@
+{
+  "name": "tutoria-peanut",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "author": "Maryelin",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/register": "^7.4.0",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "babel-polyfill": "^6.26.0",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0"
+  }
+}

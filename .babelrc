@@ -1,0 +1,31 @@
+{
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "module-resolver",
+        {
+          "root": [
+            "./src"
+          ],
+          "alias": {
+            "@endpoints": "./src/endpoints",
+            "@middleware": "./src/middleware",
+            "@models": "./src/models",
+            "@client": "./src/client",
+            "@modules": "./src/modules",
+            "@config": "./src/config",
+            "@utils": "./src/utils"
+          }
+        }
+      ]
+    ]
+  }
