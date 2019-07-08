@@ -1,5 +1,7 @@
 import Koa from 'koa'
 import Router from 'koa-router'
+import mongoose from 'mongoose'
+import UserModel from './models/users'
 
 class App {
   async setup () {
@@ -8,6 +10,12 @@ class App {
     return api
   }
 }
+
+function initDB() {
+
+  mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
+}
+
 
 function createEndpoints(api) {
   let router = new  Router()
@@ -29,19 +37,18 @@ function createEndpoints(api) {
       })
   })
   router.put('/users/:id', (ctx, next) => {
-    console.log(ctx.request.req)
+    //console.log(ctx.request.req)
     Object.assign(usuarios[ctx.params.id], ctx.request.body)
     ctx.body = 'Reemplazar por completo'
   })
-  router.post('/users', (ctx, next) => {
-    usuarios.push(ctx.request.body)
+  router.post('/users', async (ctx, next) => {
+   await UserModel.create(ctx.request.body)
     ctx.body = 'Agregado'
   })
   router.patch('/users/:id/name', (ctx, next) => {
     usuarios[ctx.params.id].name = ctx.request.body
     ctx.body = 'Modificado'
   })
-
 
 
 
