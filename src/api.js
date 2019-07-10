@@ -1,19 +1,30 @@
 import Koa from 'koa'
 import Router from 'koa-router'
+import bodyParser from 'koa-body'
 import mongoose from 'mongoose'
 import UserModel from './models/users'
 
 class App {
   async setup () {
-    const api = new Koa()
-    createEndpoints(api)
-    return api
+      const api = new Koa()
+      api.use(bodyParser({
+          multipart : true
+      }))
+      await initDB()
+      createEndpoints(api)
+      return api
   }
 }
 
-function initDB() {
+async function initDB() {
 
-  mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
+    try {
+        await mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true})
+        mongoose.set('debug', true)
+        console.log("Connected")
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 
@@ -27,22 +38,42 @@ function createEndpoints(api) {
   router.get('/', (ctx, next) => {
     ctx.body = 'Hello World!'
   })
-  router.get('/users', (ctx, netx) =>{
-    ctx.body = usuarios
+  router.get('/users', async (ctx, netx) =>{
+    ctx.body = await UserModel.find().select({name:1, rut:1})
 
   })
-  router.get('/users/:id', (ctx, next) => {
-      ctx.body = usuarios.find( function (user) {
-        return user.id === ctx.params.id
-      })
-  })
-  router.put('/users/:id', (ctx, next) => {
+
+    router.get('/users/options', async (ctx, next) => {
+        const nameFilter = ctx.request.query
+        console.log(ctx.request.query)
+        ctx.body = await UserModel
+            .find()
+            .where({name: `/${nameFilter['name-like']}/`})
+            .select({rut:1})
+    })
+
+    router.get('/users/:id', async (ctx, next) => {
+        ctx.body = await UserModel
+            .find()
+            .where({rut: ctx.params.id})
+            .select({rut:1})
+    })
+
+
+
+    router.put('/users/:id', (ctx, next) => {
     //console.log(ctx.request.req)
     Object.assign(usuarios[ctx.params.id], ctx.request.body)
     ctx.body = 'Reemplazar por completo'
   })
   router.post('/users', async (ctx, next) => {
-   await UserModel.create(ctx.request.body)
+      console.log("body", ctx.request.body)
+   try {
+       await UserModel.create(ctx.request.body)
+       console
+   } catch (e) {
+       console.log(e)
+   }
     ctx.body = 'Agregado'
   })
   router.patch('/users/:id/name', (ctx, next) => {
